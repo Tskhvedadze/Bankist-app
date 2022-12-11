@@ -78,6 +78,18 @@ const displayMovements = function (movements) {
 
 displayMovements(account1.movements);
 
+const createUserNames = function (accs) {
+  accs.forEach(acc => {
+    acc.username = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(firstChar => firstChar.at(0))
+      .join('');
+  });
+};
+
+createUserNames(accounts);
+
 /////////////////////////////////////////////////
 // LECTURES
 
@@ -188,4 +200,47 @@ currenciesUnique.forEach((value, _, set) => {
 });
 
 
+const check_Dogs = function (juliasDogs, katesDogs) {
+  const dogsJuliaCorrected = juliasDogs.slice();
+  dogsJuliaCorrected.splice(0, 1);
+  dogsJuliaCorrected.splice(-2);
+
+  const dogs = dogsJuliaCorrected.concat(katesDogs);
+
+  dogs.forEach((dog, i) => {
+    if (dog >= 3)
+      console.log(`Dog number ${i + 1} is an adult, and is ${dog} years old`);
+    else console.log(`Dog number ${i + 1} is still a puppy`);
+  });
+};
+
+check_Dogs([3, 5, 2, 12, 7], [4, 1, 15, 8, 3]);
+check_Dogs([9, 16, 6, 8, 3], [10, 5, 6, 1, 4]);
+
+const obj = {};
+const euroToUsd = 1.1;
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+
+// arrow function
+const movementsUSD = movements.map(v => v * euroToUsd);
+const movementsObj = movements.map((v, i) => ({ key: i, value: v }));
+
+console.log(movementsObj);
+
+console.log(movements);
+console.log(movementsUSD);
+
+const arr = [];
+for (const mv of movements) {
+  arr.push(mv * euroToUsd);
+}
+console.log(arr);
+
+const movementsDescription = movements.map(
+  (mov, i) =>
+    `Movement ${i + 1}: You ${mov > 0 ? 'deposit' : 'withdraw'} ${Math.abs(
+      mov
+    )} `
+);
+console.log(movementsDescription);
 */
