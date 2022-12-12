@@ -170,6 +170,28 @@ btnTransfer.addEventListener('click', function (e) {
   }
 });
 
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    // find index to delete the account alements with index
+    const index = accounts.findIndex(
+      acc => acc.username === currentAccount.username
+    );
+    // Detlete account
+    accounts.splice(index, 1);
+
+    // Hide UI
+    containerApp.style.opacity = 0;
+
+    // clear te inputs
+    inputCloseUsername.value = inputClosePin.value = '';
+  }
+});
+
 /////////////////////////////////////////////////
 // LECTURES
 
