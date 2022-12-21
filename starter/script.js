@@ -197,13 +197,35 @@ const updateUI = function (acc) {
   calcDisplaySummary(acc);
 };
 
-// event Handler
-let currentAccount;
+const startLogoutTimer = function () {
+  const tick = function () {
+    const min = `${Math.trunc(time / 60)}`.padStart(2, 0);
+    const sec = `${time % 60}`.padStart(2, 0);
 
-// Fake Allways logedin
-currentAccount = account1;
-updateUI(currentAccount);
-containerApp.style.opacity = 100;
+    // In each call print the remaining time to UI
+    labelTimer.textContent = `${min}:${sec}`;
+
+    // When 0 seconds , stop timer and logout User
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = 'Log in to get started';
+      containerApp.style.opacity = 0;
+    }
+    // Decrease one second
+    time--;
+  };
+  // set time to 5 minutes
+  let time = 300;
+
+  // call the timer first time
+  tick();
+  // call the timer every second
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
+
+// event Handler
+let currentAccount, timer;
 
 btnLogin.addEventListener('click', function (e) {
   // prevent Form from submitting
@@ -222,24 +244,21 @@ btnLogin.addEventListener('click', function (e) {
 
     // Get the => day/month/year
     const date = new Date();
-    const options = {
+    labelDate.textContent = new Intl.DateTimeFormat(currentAccount.locale, {
       hour: 'numeric',
       minute: 'numeric',
       day: 'numeric',
       month: 'numeric',
       year: 'numeric',
-    };
-    labelDate.textContent = new Intl.DateTimeFormat(
-      currentAccount.locale,
-      options
-    ).format(date);
+    }).format(date);
 
     // Clear the input fields
     inputLoginUsername.value = inputLoginPin.value = '';
-
     // loose the focus
     inputLoginPin.blur();
-
+    // timer
+    if (timer) clearInterval(timer);
+    timer = startLogoutTimer();
     // Update UI
     updateUI(currentAccount);
   }
@@ -269,6 +288,10 @@ btnTransfer.addEventListener('click', function (e) {
 
     // Update UI
     updateUI(currentAccount);
+
+    // Reset The Timer
+    clearInterval(timer);
+    timer = startLogoutTimer();
   }
 });
 
@@ -278,14 +301,20 @@ btnLoan.addEventListener('click', e => {
   const amount = Math.floor(inputLoanAmount.value);
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
-    // add movement
-    currentAccount.movements.push(amount);
+    setTimeout(function () {
+      // add movement
+      currentAccount.movements.push(amount);
 
-    // Add Loan Date
-    currentAccount.movementsDates.push(new Date().toISOString());
+      // Add Loan Date
+      currentAccount.movementsDates.push(new Date().toISOString());
 
-    // update UI
-    updateUI(currentAccount);
+      // update UI
+      updateUI(currentAccount);
+
+      // Reset The Timer
+      clearInterval(timer);
+      timer = startLogoutTimer();
+    }, 3000);
   }
 
   inputLoanAmount.value = '';
@@ -319,13 +348,3 @@ btnSort.addEventListener('click', e => {
   displayMovements(currentAccount, !sorted);
   sorted = !sorted;
 });
-
-//////////////////////////////////////////////////
-const num = 346634793.34;
-
-const options = {
-  style: 'currency',
-  currency: 'EUR',
-};
-
-console.log(new Intl.NumberFormat('en-US', options).format(num));
